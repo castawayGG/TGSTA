@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - bot_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head && python -m bot.main"
+    profiles:
+      - postgres
+
+  bot_sqlite:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - bot_data:/app/data
+    command: >
+      sh -c "alembic upgrade head && python -m bot.main"
+    profiles:
+      - sqlite
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-botuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-botpass}
+      POSTGRES_DB: ${POSTGRES_DB:-tgsta}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-botuser} -d ${POSTGRES_DB:-tgsta}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    profiles:
+      - postgres
+
+volumes:
+  bot_data:
+  pg_data:
