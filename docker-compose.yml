@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - with-postgres
+
+  bot-sqlite:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    profiles:
+      - sqlite
+      - default
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tgsta
+      POSTGRES_USER: tgsta
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tgsta"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    profiles:
+      - with-postgres
+
+volumes:
+  pg_data:

@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment secrets
+.env
+
+# Database files (local dev)
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+# Alembic generated (keep versions)
+# alembic/versions/*.py  # keep
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+
+# Ruff / Black cache
+.ruff_cache/
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Docker
+*.tar
+
+# IDE
+.idea/
+.vscode/
+*.swp
